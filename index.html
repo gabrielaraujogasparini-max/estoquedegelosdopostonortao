@@ -1,226 +1,184 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <link rel="icon" href="favicon.ico">
-
 <meta charset="UTF-8">
 <title>Estoque de Gelos - Posto Nortão</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<link rel="icon" href="https://i.ibb.co/xSk1rq8m/Chat-GPT-Image-30-de-jan-de-2026-00-33-21.png">
+
 <style>
-body {
-    font-family: Arial, Helvetica, sans-serif;
-    background: #f1f4f9;
-    margin: 0;
-    padding: 15px;
-}
-.container {
-    max-width: 420px;
-    margin: auto;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    overflow: hidden;
-}
-.faixa-azul {
-    background: #0057b7;
-    color: #fff;
-    text-align: center;
-    padding: 18px;
-    font-size: 20px;
-    font-weight: bold;
-}
-.faixa-branca {
-    height: 6px;
-    background: #fff;
-}
-.faixa-vermelha {
-    background: #c40000;
-    color: #fff;
-    text-align: center;
-    padding: 8px;
-    font-size: 13px;
-}
-.content {
-    padding: 15px;
-}
-label {
-    display: block;
-    margin-top: 12px;
-    font-weight: bold;
-}
-select, input {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
-.estoque {
-    margin-top: 15px;
-    background: #eef3ff;
-    padding: 12px;
-    border-radius: 6px;
-    text-align: center;
-    font-weight: bold;
-}
+body { font-family: Arial; background:#f1f4f9; margin:0; }
+.container { max-width:420px; margin:auto; background:#fff; min-height:100vh; }
+.topo-img { width:100%; display:block; }
+
+.header { background:#0057b7; color:#fff; text-align:center; padding:12px; font-weight:bold; }
+.header-red { background:#c40000; color:#fff; text-align:center; padding:6px; }
+
+.content { padding:15px; }
+
 button {
-    width: 100%;
-    margin-top: 12px;
-    padding: 12px;
-    font-size: 16px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
+    width:100%; padding:12px; margin-top:12px;
+    border:none; border-radius:6px; color:#fff;
+    font-size:15px; cursor:pointer;
 }
-.btn-add { background: #2e8b57; color: #fff; }
-.btn-baixa { background: #0057b7; color: #fff; }
-.btn-fechar { background: #c40000; color: #fff; }
-.footer {
-    text-align: center;
-    font-size: 12px;
-    color: #666;
-    padding: 10px;
-}
+.blue { background:#0057b7; }
+.red { background:#c40000; }
+.gray { background:#555; }
+
+label { font-weight:bold; display:block; margin-top:10px; }
+select, input { width:100%; padding:8px; margin-top:5px; }
+
+.estoque { text-align:center; font-size:18px; font-weight:bold; margin:10px 0; }
+
+.hidden { display:none; }
+.footer { text-align:center; font-size:12px; color:#666; padding:10px; }
 </style>
 </head>
 
 <body>
-
 <div class="container">
-    <div class="faixa-azul">Estoque de Gelos</div>
-    <div class="faixa-branca"></div>
-    <div class="faixa-vermelha">Posto Nortão</div>
 
-    <div class="content">
+<img class="topo-img" src="https://i.ibb.co/xSk1rq8m/Chat-GPT-Image-30-de-jan-de-2026-00-33-21.png">
 
-        <label>Responsável / Frentista</label>
-        <select id="frentista">
-            <option value="">Selecione</option>
-            <option>Gabriel</option>
-            <option>Robson</option>
-            <option>Vinícius</option>
-            <option>Vitor</option>
-            <option>Alexsandro</option>
-            <option>Tainara</option>
-            <option>Dinho</option>
-            <option>Ana Paula</option>
-            <option>Genival</option>
-            <option>Hakson</option>
-            <option>Eduardo</option>
-        </select>
+<div class="header">ESTOQUE DE GELOS</div>
+<div class="header-red">Posto Nortão</div>
 
-        <label>Quantidade vendida</label>
-        <input type="number" id="qtdVenda" min="1" placeholder="Ex: 5">
+<div class="content" id="principal">
 
-        <button class="btn-baixa" onclick="darBaixa()">Registrar venda</button>
+<button class="red" onclick="fecharTurno()">FECHAR TURNO</button>
 
-        <label>Adicionar gelo ao estoque</label>
-        <input type="number" id="qtdEntrada" placeholder="Ex: 20">
+<div class="estoque">
+Estoque Atual: <span id="estoque">0</span> gelos
+</div>
 
-        <button class="btn-add" onclick="adicionarGelo()">Adicionar gelo</button>
+<label>Frentista</label>
+<select id="frentista">
+<option value="">Selecione</option>
+<option>Gabriel</option><option>Robson</option><option>Vinícius</option>
+<option>Vitor</option><option>Alexsandro</option><option>Tainara</option>
+<option>Dinho</option><option>Ana Paula</option><option>Genival</option>
+<option>Hakson</option><option>Eduardo</option>
+</select>
 
-        <div class="estoque">
-            Estoque atual: <span id="estoque">0</span> gelos
-        </div>
+<label>Quantidade vendida</label>
+<input type="number" id="qtd" min="1">
 
-        <button class="btn-fechar" onclick="fecharTurno()">Fechar turno</button>
+<button class="blue" onclick="darBaixa()">Dar baixa e enviar WhatsApp</button>
+<button class="gray" onclick="abrirSenha()">Atualizar estoque (restrito)</button>
 
-    </div>
+</div>
 
-    <div class="footer">
-        Aplicativo criado por <strong>Gabriel Gasparini</strong>
-    </div>
+<div class="content hidden" id="senhaPage">
+<label>Senha</label>
+<input type="password" id="senha">
+<button class="blue" onclick="validarSenha()">Entrar</button>
+<button class="gray" onclick="voltar()">Voltar</button>
+</div>
+
+<div class="content hidden" id="estoquePage">
+<label>Novo estoque total</label>
+<input type="number" id="novoEstoque">
+<button class="red" onclick="atualizarEstoque()">Atualizar</button>
+<button class="gray" onclick="voltar()">Voltar</button>
+</div>
+
+<div class="footer">Sistema interno • Posto Nortão</div>
+
 </div>
 
 <script>
-let estoque = parseInt(localStorage.getItem("estoqueGelo")) || 0;
-let vendasTurno = JSON.parse(localStorage.getItem("vendasTurno")) || [];
+let estoque = Number(localStorage.getItem("estoque")) || 0;
+let vendas = JSON.parse(localStorage.getItem("vendas")) || [];
+let turnoAtual = Number(localStorage.getItem("turno")) || 1;
 
 document.getElementById("estoque").innerText = estoque;
 
-/* ADICIONAR GELO */
-function adicionarGelo() {
-    const responsavel = document.getElementById("frentista").value;
-    const qtd = parseInt(document.getElementById("qtdEntrada").value);
-    if (!responsavel) return alert("Selecione o responsável.");
-    if (!qtd || qtd <= 0) return alert("Quantidade inválida.");
-
-    estoque += qtd;
-    localStorage.setItem("estoqueGelo", estoque);
+function salvar() {
+    localStorage.setItem("estoque", estoque);
+    localStorage.setItem("vendas", JSON.stringify(vendas));
+    localStorage.setItem("turno", turnoAtual);
     document.getElementById("estoque").innerText = estoque;
-
-    const agora = new Date();
-    const msg =
-`*ENTRADA DE GELO - POSTO NORTÃO*
-*Responsável:* ${responsavel}
-*Quantidade adicionada:* ${qtd}
-*Estoque atual:* ${estoque}
-*Data:* ${agora.toLocaleDateString("pt-BR")}
-*Hora:* ${agora.toLocaleTimeString("pt-BR")}`;
-
-    window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
-    document.getElementById("qtdEntrada").value = "";
 }
 
-/* VENDA */
 function darBaixa() {
-    const frentista = document.getElementById("frentista").value;
-    const qtd = parseInt(document.getElementById("qtdVenda").value);
-    if (!frentista) return alert("Selecione o frentista.");
-    if (!qtd || qtd <= 0) return alert("Quantidade inválida.");
-    if (qtd > estoque) return alert("Estoque insuficiente.");
+    const f = frentista.value;
+    const q = Number(qtd.value);
+    if(!f || !q || q > estoque) return alert("Dados inválidos");
 
-    estoque -= qtd;
+    estoque -= q;
+
     const agora = new Date();
-
-    vendasTurno.push({
-        frentista,
-        qtd,
-        hora: agora.toLocaleTimeString("pt-BR")
+    vendas.push({
+        frentista:f,
+        qtd:q,
+        hora:agora.toLocaleTimeString("pt-BR"),
+        data:agora.toLocaleDateString("pt-BR"),
+        turno:turnoAtual
     });
 
-    localStorage.setItem("estoqueGelo", estoque);
-    localStorage.setItem("vendasTurno", JSON.stringify(vendasTurno));
-    document.getElementById("estoque").innerText = estoque;
+    salvar();
 
     const msg =
-`*VENDA DE GELO - POSTO NORTÃO*
-*Frentista:* ${frentista}
-*Quantidade vendida:* ${qtd}
+`*BAIXA DE GELO*
+*Frentista:* ${f}
+*Quantidade:* ${q}
 *Estoque atual:* ${estoque}
-*Data:* ${agora.toLocaleDateString("pt-BR")}
-*Hora:* ${agora.toLocaleTimeString("pt-BR")}`;
+*Turno:* ${turnoAtual === 1 ? "Primeiro" : "Segundo"}
 
-    window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
-    document.getElementById("qtdVenda").value = "";
+${agora.toLocaleDateString("pt-BR")} ${agora.toLocaleTimeString("pt-BR")}`;
+
+    window.open("https://wa.me/?text="+encodeURIComponent(msg));
+    qtd.value="";
 }
 
-/* FECHAMENTO */
 function fecharTurno() {
-    if (vendasTurno.length === 0) {
-        alert("Nenhuma venda registrada no turno.");
-        return;
-    }
+    const vendasTurno = vendas.filter(v => v.turno === turnoAtual);
+    if(vendasTurno.length === 0) return alert("Nenhuma venda no turno");
 
-    let resumo = `*FECHAMENTO DE TURNO - POSTO NORTÃO*\n\n`;
     let total = 0;
+    let texto = `*FECHAMENTO ${turnoAtual === 1 ? "PRIMEIRO" : "SEGUNDO"} TURNO*\n\n`;
 
-    vendasTurno.forEach(v => {
+    vendasTurno.forEach(v=>{
         total += v.qtd;
-        resumo += `• ${v.frentista} vendeu ${v.qtd} gelos às ${v.hora}\n`;
+        texto += `${v.frentista} - ${v.qtd} gelo(s) - ${v.hora}\n`;
     });
 
-    resumo += `\n*Total vendido:* ${total}`;
-    resumo += `\n*Estoque atual:* ${estoque}`;
+    texto += `\n*Total vendido:* ${total}
+*Estoque final:* ${estoque}`;
 
-    localStorage.removeItem("vendasTurno");
-    vendasTurno = [];
+    window.open("https://wa.me/?text="+encodeURIComponent(texto));
 
-    window.open("https://wa.me/?text=" + encodeURIComponent(resumo), "_blank");
+    vendas = vendas.filter(v => v.turno !== turnoAtual);
+    turnoAtual = turnoAtual === 1 ? 2 : 1;
+    if(turnoAtual === 1) vendas = [];
+
+    salvar();
+}
+
+function abrirSenha(){
+principal.classList.add("hidden");
+senhaPage.classList.remove("hidden");
+}
+
+function validarSenha(){
+if(senha.value==="Nortao2025"){
+senhaPage.classList.add("hidden");
+estoquePage.classList.remove("hidden");
+}else alert("Senha incorreta");
+}
+
+function atualizarEstoque(){
+estoque = Number(novoEstoque.value);
+salvar(); voltar();
+}
+
+function voltar(){
+senhaPage.classList.add("hidden");
+estoquePage.classList.add("hidden");
+principal.classList.remove("hidden");
 }
 </script>
 
 </body>
 </html>
-
