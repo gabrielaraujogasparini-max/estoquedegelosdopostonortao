@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <link rel="icon" href="favicon.ico">
+<link rel="icon" href="favicon.ico">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0057b7">
 
@@ -34,6 +34,7 @@ label { font-weight:bold; display:block; margin-top:10px; }
 select, input { width:100%; padding:8px; margin-top:5px; }
 
 .estoque { text-align:center; font-size:18px; font-weight:bold; margin:10px 0; }
+.info-fechamento { font-size:13px; color:#333; margin-bottom:10px; text-align:center; }
 
 .hidden { display:none; }
 .footer { text-align:center; font-size:12px; color:#666; padding:10px; }
@@ -50,7 +51,7 @@ select, input { width:100%; padding:8px; margin-top:5px; }
 
 <div class="content" id="principal">
 
-<button class="red" onclick="fecharTurno()">FECHAR TURNO</button>
+<div class="info-fechamento" id="ultimoFechamento"></div>
 
 <div class="estoque">
 Estoque Atual: <span id="estoque">0</span> gelos
@@ -70,6 +71,7 @@ Estoque Atual: <span id="estoque">0</span> gelos
 
 <button class="blue" onclick="darBaixa()">Dar baixa e enviar WhatsApp</button>
 <button class="gray" onclick="abrirSenha()">Atualizar estoque (restrito)</button>
+<button class="red" onclick="fecharTurno()">Fechar turno</button>
 
 </div>
 
@@ -87,7 +89,10 @@ Estoque Atual: <span id="estoque">0</span> gelos
 <button class="gray" onclick="voltar()">Voltar</button>
 </div>
 
-<div class="footer">Sistema interno • Posto Nortão</div>
+<div class="footer">
+Sistema interno • Posto Nortão<br>
+Desenvolvido por Gabriel Gasparini
+</div>
 
 </div>
 
@@ -95,69 +100,74 @@ Estoque Atual: <span id="estoque">0</span> gelos
 let estoque = Number(localStorage.getItem("estoque")) || 0;
 let vendas = JSON.parse(localStorage.getItem("vendas")) || [];
 let turnoAtual = Number(localStorage.getItem("turno")) || 1;
+let estoqueInicialTurno = Number(localStorage.getItem("estoqueInicialTurno")) || estoque;
+let ultimoFechamento = JSON.parse(localStorage.getItem("ultimoFechamento"));
 
 document.getElementById("estoque").innerText = estoque;
 
+if (ultimoFechamento) {
+document.getElementById("ultimoFechamento").innerHTML =
+`Último fechamento:<br>
+${ultimoFechamento.turno}<br>
+Inicial: ${ultimoFechamento.inicial} | Vendido: ${ultimoFechamento.vendido} | Final: ${ultimoFechamento.final}`;
+}
+
 function salvar() {
-    localStorage.setItem("estoque", estoque);
-    localStorage.setItem("vendas", JSON.stringify(vendas));
-    localStorage.setItem("turno", turnoAtual);
-    document.getElementById("estoque").innerText = estoque;
+localStorage.setItem("estoque", estoque);
+localStorage.setItem("vendas", JSON.stringify(vendas));
+localStorage.setItem("turno", turnoAtual);
+localStorage.setItem("estoqueInicialTurno", estoqueInicialTurno);
 }
 
 function darBaixa() {
-    const f = frentista.value;
-    const q = Number(qtd.value);
-    if(!f || !q || q > estoque) return alert("Dados inválidos");
+const f = frentista.value;
+const q = Number(qtd.value);
+if(!f || !q || q > estoque) return alert("Dados inválidos");
 
-    estoque -= q;
+estoque -= q;
 
-    const agora = new Date();
-    vendas.push({
-        frentista:f,
-        qtd:q,
-        hora:agora.toLocaleTimeString("pt-BR"),
-        data:agora.toLocaleDateString("pt-BR"),
-        turno:turnoAtual
-    });
+const agora = new Date();
+vendas.push({ frentista:f, qtd:q, hora:agora.toLocaleTimeString("pt-BR"), turno:turnoAtual });
 
-    salvar();
+salvar();
 
-    const msg =
+const msg =
 `*BAIXA DE GELO*
 *Frentista:* ${f}
 *Quantidade:* ${q}
 *Estoque atual:* ${estoque}
-*Turno:* ${turnoAtual === 1 ? "Primeiro" : "Segundo"}
+*Turno:* ${turnoAtual === 1 ? "Primeiro" : "Segundo"}`;
 
-${agora.toLocaleDateString("pt-BR")} ${agora.toLocaleTimeString("pt-BR")}`;
-
-    window.open("https://wa.me/?text="+encodeURIComponent(msg));
-    qtd.value="";
+window.open("https://wa.me/?text="+encodeURIComponent(msg));
+qtd.value="";
+document.getElementById("estoque").innerText = estoque;
 }
 
 function fecharTurno() {
-    const vendasTurno = vendas.filter(v => v.turno === turnoAtual);
-    if(vendasTurno.length === 0) return alert("Nenhuma venda no turno");
+let total = vendas.reduce((s,v)=>s+v.qtd,0);
 
-    let total = 0;
-    let texto = `*FECHAMENTO ${turnoAtual === 1 ? "PRIMEIRO" : "SEGUNDO"} TURNO*\n\n`;
-
-    vendasTurno.forEach(v=>{
-        total += v.qtd;
-        texto += `${v.frentista} - ${v.qtd} gelo(s) - ${v.hora}\n`;
-    });
-
-    texto += `\n*Total vendido:* ${total}
+const texto =
+`*FECHAMENTO ${turnoAtual === 1 ? "PRIMEIRO" : "SEGUNDO"} TURNO*
+*Estoque inicial:* ${estoqueInicialTurno}
+*Total vendido:* ${total}
 *Estoque final:* ${estoque}`;
 
-    window.open("https://wa.me/?text="+encodeURIComponent(texto));
+window.open("https://wa.me/?text="+encodeURIComponent(texto));
 
-    vendas = vendas.filter(v => v.turno !== turnoAtual);
-    turnoAtual = turnoAtual === 1 ? 2 : 1;
-    if(turnoAtual === 1) vendas = [];
+ultimoFechamento = {
+turno: turnoAtual === 1 ? "Primeiro Turno" : "Segundo Turno",
+inicial: estoqueInicialTurno,
+vendido: total,
+final: estoque
+};
 
-    salvar();
+localStorage.setItem("ultimoFechamento", JSON.stringify(ultimoFechamento));
+
+vendas = [];
+turnoAtual = turnoAtual === 1 ? 2 : 1;
+estoqueInicialTurno = estoque;
+salvar();
+location.reload();
 }
 
 function abrirSenha(){
@@ -174,7 +184,9 @@ estoquePage.classList.remove("hidden");
 
 function atualizarEstoque(){
 estoque = Number(novoEstoque.value);
+estoqueInicialTurno = estoque;
 salvar(); voltar();
+document.getElementById("estoque").innerText = estoque;
 }
 
 function voltar(){
@@ -183,14 +195,12 @@ estoquePage.classList.add("hidden");
 principal.classList.remove("hidden");
 }
 </script>
+
 <script>
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js");
+navigator.serviceWorker.register("service-worker.js");
 }
 </script>
 
 </body>
 </html>
-
-
-
