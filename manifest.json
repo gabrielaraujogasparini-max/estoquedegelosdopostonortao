@@ -1,6 +1,6 @@
 {
   "name": "Estoque de Gelos - Posto Nortão",
-  "short_name": "Gelos",
+  "short_name": "GELO NORTÃO",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0057b7",
@@ -19,3 +19,4 @@
     }
   ]
 }
+
