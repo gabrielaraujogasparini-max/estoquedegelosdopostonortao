@@ -183,8 +183,14 @@ estoquePage.classList.add("hidden");
 principal.classList.remove("hidden");
 }
 </script>
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+</script>
 
 </body>
 </html>
+
 
 
